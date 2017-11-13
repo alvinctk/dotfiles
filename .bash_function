@@ -1,0 +1,134 @@
+#!/bin/bash
+echo "Loading global bash function ~/.bash_function"
+
+##################################################################################
+#########################     function COMMANDS          #########################
+##################################################################################
+function fgrep
+{
+  read search_query;
+  read file_list;
+  grep -i -r -n "$search_query" "$file_list";
+}
+
+sort-du () {
+    paste -d '#' <( du "$1" ) <( du -h "$1" ) | sort -n -k1,7 | cut -d '#' -f 2
+}
+# statistic of the frequnce of your command from your history
+hstats() {
+  history |\
+  awk '{
+   CMD[$4]++;count++;
+  } 
+  END { 
+    for (a in CMD ) print CMD[a] " " CMD[a]/count*100 "% " a }' \
+ | sort -nr | column -t | head -n 10
+}
+
+# Read $PATH environment variable 
+# And output each path in a new line.
+function rpath
+{
+ echo $PATH | tr ':' '\n';
+}
+
+function extract {
+   if [ -f $1 ] ; then
+       case $1 in
+           *.tar.bz2)   tar xvjf $1    ;;
+           *.tar.gz)    tar xvzf $1    ;;
+           *.bz2)       bunzip2 $1     ;;
+           *.rar)       unrar x $1       ;;
+           *.gz)        gunzip $1      ;;
+           *.tar)       tar xvf $1     ;;
+           *.tbz2)      tar xvjf $1    ;;
+           *.tgz)       tar xvzf $1    ;;
+           *.zip)       unzip $1       ;;
+           *.Z)         uncompress $1  ;;
+           *.7z)        7z x $1        ;;
+           *)           echo "don't know how to extract '$1'..." ;;
+       esac
+   else
+       echo "'$1' is not a valid file!"
+   fi
+ }
+
+
+ bgrep() {
+    method_keyword="$1"
+    closing_braces="$2"
+    search_file="$3"
+    sed -n '/'"$method_keyword"'/,/'"$closing_braces"'/p' $search_file \
+        | sed '/'"$method_keyword"'/d' \
+        | sed '/'"$closing_braces"'/d' 
+}
+
+
+function backup_profile {
+    local verbose_flag="$1" # v to print backup process.
+    local verbose_name="v"
+    local backup_list="$2" # one file on each line to be backup 
+                           # to be store in ~/
+    local backup_name="$(basename $backup_list | sed 's/[\. ]//g')";
+    echo "backup_name is " $backup_name;
+    local backup_dir="~/.bak.""$backup_name";
+    echo "backup_dir is $backup_dir";
+    
+     
+    # To return this directory after backup files.
+    local cur_pwd="$(pwd)";
+    echo "cur_pwd = " $cur_pwd;
+    # Go to ~; backup directory will be one directory under ~
+    cd;
+   
+    mkdir -p $backup_dir && echo "making directory " $backup_dir 
+    cd $backup_dir 
+
+    local backup_version_file=".bak.version"
+    # create backup version file if does not exists 
+    # otherwise, update backup_version to previously stored version. 
+    # By default, the oldest version is 1.  
+    if [ ! -f "$backup_version_file" ]; then \
+       touch "$backup_version_file";
+       [ "$verbose_flag" == "$verbose_name" ] && echo "touch $backup_version_file";
+       echo "0" > "$backup_version_file";
+       
+    fi
+       
+     # Update version to current version and save it to file.
+    # Save version to file by overwritting previous data.
+    # > => overwrite; >> implies append.  
+    local backup_version="$(cat $backup_version_file)"
+    let backup_version=backup_version+1;
+    [ "$verbose_flag" == "$verbose_name" ] && echo "backup version is $backup_version";
+    echo "$backup_version" > "$backup_version_file"
+    
+    # format of backup suffix filename
+    local backup_suffix=".backup.v"$backup_version
+    [ "$verbose_flag" == "$verbose_name" ] && echo "backup suffix is $backup_suffix";   
+    
+    # make directory this version of backup-tag
+    if [ ! -d "$backup_version" ]; then \
+        mkdir "$backup_version"; 
+    fi
+    cd $backup_version;
+    #for backup_this_file in "${to_backup[@]}" ; do \
+    while read file_to_backup; do
+        echo "Trying to backup file: $file_to_backup"
+        [ -f "$file_to_backup" ] && \cp -f "$file_to_backup" "$file_to_backup""$backup_suffix" \
+            && echo "Successful backup to ""$pwd/$file_to_backup""$backup_suffix";
+    done < "$backup_list"
+    cd ..
+# Create archive using gzip
+# -z : Compress archive using gzip program
+# -c: Create archive
+# -v: Verbose i.e display progress while creating archive
+# -f: Archive File name
+    local archive_name="archive.""$backup_dir"".v$backup_version.tar.gz"
+    local archive_dir="$pwd/$backup_version"
+    [ "$verbose_flag" == "$verbose_name" ] && echo "Attempting to archive: $archive_dir";  
+    tar -zcvf $archive_name $archive_dir && \
+     [ "$verbose_flag" == "$verbose_name" ] && echo "compress archive: $archive_dir/$archive_name";   
+    
+    cd $cur_pwd;
+}

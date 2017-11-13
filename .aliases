@@ -1,0 +1,129 @@
+#!/bin/bash 
+
+echo "Customizing aliases with ~/.aliases setting"
+
+# Legend{{{1
+# *** denotes currently commented out for lack of use
+
+# Dependency are comma separated
+# !a! denotes uses another function or aliases in ~/.aliases  
+# !b! denotes dependency in ~/.bashrc
+
+
+# Warning: List aliases must be before "Change directory" due to dependant on gls {{{1.
+# List {{{1
+# gls      > ~/homebrew/bin/gls with color
+#            All gls command are aliases to this.
+#            To use without gls alias, $> \gls
+# glsm     > long directory listing pipe to more 
+# glsdots  > list dots file/directory 
+# dcol     > Display "$1" column per row and column are left aligned.
+#            To use pipe output to dcol. Example: $> ls -l | dcol 6
+# gls[[d|f|l]|[a|af|ad]] > format ls into left aligned 4 columns.
+#                        > !a! Uses dcol command.
+
+alias gls="gls --color=auto $@"
+alias glsm="gls -l | more" # !a!gls
+alias glsdots="gls .??*"   # !a!gls
+alias glst='gls -RF| grep :' # *** #!a!gls
+dcol() { xargs -n"$1" | column -t; }
+glsd() { gls -l | grep ^d | awk '{print $NF}' |  dcol 4; } # !a!gls
+glsf() { gls -l | grep ^- | awk '{print $NF}' |  dcol 4; } # !a!gls
+glsl() { gls -la | awk '{print $NF}' | grep "^\." | dcol 4; }  # !a!gls,dcol
+glsa() { gls -la   | grep "^-\|^d" | awk '{print $NF}' | grep "^\." | dcol 4; } #!a!gls,dcol
+glsaf() { gls -la  | grep ^- | awk '{print $NF}' | grep "^\." | dcol 4; } # !a!gls,dcol
+glsad() { gls -la  | grep ^d | awk '{print $NF}' | grep "^\." | dcol 4; } # !a!gls,dcol
+
+# Change directory {{{1
+# note: ls/gls aliases must be declare first since cd uses ls/gls.
+
+# change directory and if directory exist then list items within directory
+cdg() { cd $@ && gls; }
+
+alias cdnotes="cd $MY_NOTES_DIR" # !b!MY_NOTES_DIR
+# Path helper {{{1 
+# Limitation: works only for ~/* and ./ path. 
+# TODO: Add support for ../path ../../path ../../../path and etc.
+print_full_path() { 
+    this_path="$(echo "$1" | sed "s:^\.\(/\):"$PWD"\1:")"
+    echo $(dirname "$this_path")"/"$(basename "$this_path"); 
+}
+#remove_filepath_symbol
+# remove '^\.*\/*' or '^-*' or '^\/*'
+
+rmps(){
+    echo "$(echo "$1" | \
+        sed -e 's:^\([\.-\/]*[\.-\/]*[\.-\/]*\)*::' -e 's:\/::g')";
+}
+# Edit {{{1
+# prefix by v since primary editor is vim
+# vnotes $1 > Create new note in $MY_NOTES_DIR
+#             Open existing note.in $MY_NOTES_DIR
+#             Open up vim with $1="" or $1=" " in $MY_NOTES_DIR
+# 
+alias vvimrc="vim ~/.vimrc"
+alias vbashrc="vim ~/.bashrc"
+alias vdotfile="vim ~/.bashrc ~/.bash_profile ~/.profile ~/.aliases -p"
+alias vnotes="ovim $MY_NOTES_DIR "
+
+ovim()
+{
+    v_debug="true"
+    # If empty vnote_dir then use current working directory. 
+    vnote_dir="$PWD"; # Else, use user directory.
+    [ "$v_debug" != "" ] && echo "local $vnote_dir"
+    if [ "$1" != "" ] && [ "$1" != " " ]; then vnote_dir="$(print_full_path "$1")"; fi 
+    [ "$v_debug" != "" ] && echo "what $vnote_dir"
+    note_file="$2";
+    [ "$v_debug" != "" ] && echo "33 $2"
+    [ ! -e "$vnote_dir" ] && mkdir -p "$vnote_dir" && cd $vnote_dir && echo $PWD;
+    if [ "$note_file" != "" ] &&  [ "$note_file" != " " ]; then \
+        [ ! -f "$note_file" ] && touch $note_file;
+        vim $note_file; # Either open new note or existing note
+    else \
+        vim; # Open empty note. 
+    fi 
+}
+
+# Process {{{1
+# cpu > Show all processes sorted by CPU usage.
+# mem > Show all processes sorted by MEMORY usage.
+# duk > Report on disk usage
+# h > Provide short alias to 'history'.  Prints recently executed commands.
+# src > Source the user's .login, .bashrc, and .my_aliases files.
+alias cpu="ps -auxw | sort -r +2 | more"
+alias mem="ps -auxw | sort -r +3 | more"
+alias duk="du -sk * | sort -rn | more"
+alias ds="df -k ."
+alias h="history"
+
+alias ff="firefox &"
+alias rm="rm -i"
+
+# MS DOS Compatibility
+alias copy="cp -i"
+alias dir="ls -altr"
+alias del="rm -i"
+alias delete="rm -i"
+alias cls="clear"
+
+
+# Tools - Not used
+# ptk > Lauch perl debugger GUI.  Can attach to a script like:  ptk myscript.pl
+# dprof > Display perl profile data.
+# diff > Tell diff to ignore all whitespace.
+# font > Print list of available fonts.
+
+alias passwd="/usr/local/bin/passwd"
+alias ptk="/usr/bin/perl -d:ptkdb "
+alias dprof="/usr/bin/dprofpp"
+alias diff="diff -w"
+alias font="xlsfonts"
+alias pdb='perl -d:ptkdb'
+alias ghostview='ggv --oaf-private'	
+#alias gh='ggv --oaf-private'	
+#alias ggv='ggv --oaf-private'	
+#alias gv='ggv --oaf-private'	
+alias gv='/usr/bin/gv'
+alias ggv='/usr/bin/gv'
+alias xemacs='xemacs -geometry 84X64+0+0 &'
