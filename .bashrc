@@ -115,7 +115,8 @@ set_user_prompt() {
   PS1+="${Blue}][ ";     # ]
                          # [
   PS1+="${Cyan}\w ";     # working directory                             
-  PS1+="${Red}\$(parse_git_branch)";   # show git branch                             
+  PS1+="${Red}";
+  PS1+="\$(parse_git_branch)";   # show git branch                             
   PS1+="${Blue}]${Green}";      # ]
   PS1+="\n";                    # new line
   PS1+="\u \$> ";               # "User" $>
