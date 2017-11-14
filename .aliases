@@ -61,14 +61,16 @@ rmps(){
 #             Open existing note.in $MY_NOTES_DIR
 #             Open up vim with $1="" or $1=" " in $MY_NOTES_DIR
 # 
+alias vprofile="vim ~/.profile ~/.bash_profile -p"
 alias vvimrc="vim ~/.vimrc"
 alias vbashrc="vim ~/.bashrc"
-alias vdotfile="vim ~/.bashrc ~/.bash_profile ~/.profile ~/.aliases -p"
+alias valiases="vim ~/.aliases"
+alias vdotfile="vim ~/.bashrc ~/.bash_profile ~/.profile ~/.bash_library  ~/.aliases -p"
 alias vnotes="ovim $MY_NOTES_DIR "
 
 ovim()
 {
-    v_debug="true"
+    v_debug=""
     # If empty vnote_dir then use current working directory. 
     vnote_dir="$PWD"; # Else, use user directory.
     [ "$v_debug" != "" ] && echo "local $vnote_dir"
