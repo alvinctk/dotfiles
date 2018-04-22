@@ -1,0 +1,18 @@
+[user]
+	email = 4261923+alvinctk@users.noreply.github.com
+	name = Alvin Chia
+[merge]
+	conflictstyle = kdiff3
+	tool = vimdiff
+[core]
+	editor = vim
+[alias]
+	ci = commit
+	amend = ci
+	co = checkout
+	br = branch
+	st = status -s
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	visual = !gitk
+	dstage = diff --staged
