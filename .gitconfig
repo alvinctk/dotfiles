@@ -2,7 +2,7 @@
 	email = 4261923+alvinctk@users.noreply.github.com
 	name = Alvin Chia
 [merge]
-	conflictstyle = kdiff3
+	conflictstyle = diff3
 	tool = vimdiff
 [core]
 	editor = vim
