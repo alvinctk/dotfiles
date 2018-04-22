@@ -16,3 +16,8 @@
 	last = log -1 HEAD
 	visual = !gitk
 	dstage = diff --staged
+	pm = config --get remote.origin.url
+	show = remote show origin
+	pushm = push origin master
+[push]
+	default = upstream
