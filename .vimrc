@@ -69,7 +69,7 @@ set statusline+=%#ErrorMsg#%{GitBranchInfoString()}%#StatusLine#
 "http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
 set completeopt=menuone,menu,longest,preview
 
-set cursorline     " Underline the current line, for quick orientation
+"set cursorline     " Underline the current line, for quick orientation
 set nomodeline     " Disable mode lines (security measure)
 set visualbell     " Don't beep
 set noerrorbells   " Don't beep
@@ -104,7 +104,7 @@ set wildignore+=*~,*.swp,*.tmp
 " Font {{{2
 "set guifont=Courier\ 30
 "set guifont=Monospace\ 20
-
+set guifont=ProggyCleanTTT\ 25
 
 " Fold {{{1
 " Fold Option {{{2
@@ -127,13 +127,13 @@ nnoremap <Space> za
 vnoremap <Space> za
 
 "au GUIEnter * simalt ~x
-"set textwidth=109  " This is ensure our lines are only 109 chars long (max).
 
 " Style Formatting  {{{1
 " Default space setting {{{2
+set textwidth=79  " This is ensure our lines are only 109 chars long (max).
+set expandtab      " Change tabs to spaces 
 set shiftwidth=4   " 1tab 
 set tabstop=4      " Set number of spaces for a tab 
-set expandtab      " Change tabs to spaces 
 set listchars=eol:.,tab:+-,trail:-,extends:>,precedes:<  "Display for whitespace
 set backspace=indent,eol,start "Allows backspacing over everything insert mode. 
 
@@ -181,15 +181,42 @@ nnoremap <F5> :grep <C-R><C-W> *<CR>
 nnoremap <S-l> gt
 nnoremap <S-Right> gt
 
-" <Shift> + <[l|Left]> Move to next left tab 
+" <Shift> + <[h|Left]> Move to next left tab 
 nnoremap <S-h> gT
 nnoremap <S-Left> gT
 
-" Map window movement commands
+" Split Navigation
+"<Control> + <[k|Up]> Move to top split
+nnoremap <C-Up> <C-w><Up>
 nnoremap <C-k> <C-w><Up>
+"<Control> + <[j|Down]> Move to bottom split
+nnoremap <C-Down> <C-w><Down>
 nnoremap <C-j> <C-w><Down>
+"<Control> + <[l|Right]> Move to right split
+nnoremap <C-Right> <C-w><Right>
 nnoremap <C-l> <C-w><Right>
+"<Control> + <[h|Left]> Move to left split
+nnoremap <C-Left> <C-w><Left>
 nnoremap <C-h> <C-w><Left>
+
+" Swap Split
+"Swap top/bottom or left/right split
+nnoremap <C-r> <C-W><R>
+"Break out current window into a new tabview
+nnoremap <C-t> <C-W><T>
+"Close every window in the current tabview but the current one
+nnoremap <C-o> <C-W><o>
+
+nnoremap <C-o> <C-w><Down>
+nnoremap <C-j> <C-w><Down>
+"<Control> + <[l|Right]> Move to right split
+nnoremap <C-Right> <C-w><Right>
+nnoremap <C-l> <C-w><Right>
+"<Control> + <[h|Left]> Move to left split
+nnoremap <C-Left> <C-w><Left>
+nnoremap <C-h> <C-w><Left>
+
+
 
 " Plugin configuration {{{1
 " vim-Pandoc {{{2
@@ -213,12 +240,20 @@ map <C-n> :NERDTreeToggle<CR>
 " plugin-source: https://github.com/xolox/vim-notes
 " plugin-source: https://github.com/xolox/vim-misc
 let g:notes_suffix = '.txt' 
-let g:notes_directories = [ '~/Notes', '~/Dropbox/Shared Notes']
-let g:notes_markdown_program='~/homebrew/bin/markdown'
+let g:notes_directories = [ '~/Notes', '~/Dropbox/Notes']
+let g:notes_markdown_program='/usr/bin/markdown'
 
-autocmd BufNewFile,BufRead \*.{md,mdwn,mkd,mkdn,mark\*} set filetype=markdown
+"autocmd BufNewFile,BufRead \*.{md,mdwn,mkd,mkdn,mark\*} set filetype=markdown
+" Following https://github.com/tpop/vim-markdown
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+" Enable fenced code block syntax highlighting in your markdown documents
+let g:markdown_fenced_languages = ['html', 'python', 'vim', 'ruby', 'c', 'bash=sh']
+
+
 " Vim Airline Section {{{2
 " plugin-source: https://github.com/vim-airline/vim-airline
+
+let g:airline#extensions#tabline#enabled = 1 " 
 let g:airline_detect_paste=1     " Enable paste detection 
 let g:airline_detect_modified=1  " Enable modified detection
 let g:airline_detect_spell=1     " Enable spell detection
@@ -286,21 +321,23 @@ let g:html5_aria_attributes_complete = 0           "Disable WAI-ARIA attribute s
 "================  ============================
 " Python mode settings {{{3
 let ropevim_enable_shortcuts = 1
-let g:pymode = 1
+let g:pymode_python = 'python3' 
+let g:pymode = 1                      " Turn on whole plugin
+let g:pymode_trim_whitespaces = 1    " Trim unused white spaces on save
+let g:pymode_virtualenv = 1 " Support virtual env
 
 " Documentation 
-let g:pymode_doc = 1
-let g:pymode_doc_key = 'K'
+let g:pymode_doc = 1             " Turns on documentation script
+let g:pymode_doc_key = 'K'      
 
 "Linting 
-let g:pymode_lint = 1
-let g:pymode_lint_checker = "pyflakes,pep8"
-
-" Auto check on save
-let g:pymode_lint_write = 1
-
-" Support virtualenv 
-let g:pymode_virtualenv = 1
+let g:pymode_lint_write = 1                       " Auto check on save
+let g:pymode_lint = 1                             " Turn on code checking
+let g:pymode_lint_on_write = 1
+let g:pymode_lint_sort = ['E', 'C', 'I']          " Error first 'E', then 'C' and 'I'
+let g:pymode_lint_checkers = "pyflakes,pep8"
+let g:pymode_lint_cwindow = 1                     " Auto open cwindow (quickfix) if any errors have been found
+let g:pymode_lint_signs = 1                       " Place error signs 
 
 " Enable breakpoints plugin
 let g:pymode_breakpoint = 1
@@ -323,8 +360,19 @@ let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplModSelTarget = 1
+" Configure YouCompleteMe
+"
+let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
+let g:ycm_use_ultisnips_completer = 1 " Default 1, just ensure
+let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
+let g:ycm_complete_in_comments = 0 " Completion in comments
+let g:ycm_complete_in_strings = 0 " Completion in string
+let g:ycm_auto_trigger = 0 
+"let g:ycm_key_list_select_completion = ['<C-j>', '<Down>']
+"let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
 
-
+" Goto definition with F3
+map <F3> :YcmCompleter GoTo<CR>__name__
 " autocommand {{{1
 " Execute python script {{{2
 autocmd! FileType python nnoremap <buffer> <F5> :exec '!python' shellescape(@%, 1)<CR>
@@ -344,7 +392,7 @@ augroup filetypes " {{{2
                 \%-G%.%#
     au FileType ruby    nnoremap <leader>p Yp^Cbinding.pry<Esc>
     au FileType ruby    set makeprg=clear;\ bundle\ exec\ rake
-    au FileType python  setl sw=4 makeprg=python\ % efm=
+    au FileType python  setl sw=4 ts=4 makeprg=python\ % efm=
                 \%A\ \ File\ \"%f\"\\\,\ line\ %l\\\,%m,
                 \%C\ \ \ \ %.%#,
                 \%+Z%.%#Error\:\ %.%#,
@@ -433,6 +481,8 @@ vnoremap <silent> <leader>y :<CR>:let @a=@" \| execute "normal! vgvy" \| let res
 nnoremap <silent> <F3> :zo<CR>
 " <F4> close fold {{{2
 nnoremap <silent> <F4> :zc<CR>
+
+nnoremap <silent> <F6> :w !python <CR>
 
 " <F9> grep -i {{{2 
 "nnoremap <silent> <F9> :execute "grep -i " . shellescape(expand("<cword>")) . " ./"<CR> :execute 'copen'<CR>
