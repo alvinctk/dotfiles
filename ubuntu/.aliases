@@ -1,0 +1,58 @@
+#!/bin/bash
+
+alias an="anaconda-navigator"
+
+# Good practice to deactivate one environment before activating another
+alias conda-d="conda deactivate"
+alias conda-a="conda deactivate; conda activate $@"
+alias source-d="source deactivate"
+alias source-a="source deactivate; source activate $@"
+
+# Create an python environment instead of overwriting the existing python installation
+# Example, create an environment with specific python version: $> conda create -n py27 python=2.7 anaconda
+# Example, create an environment with specific python version and multiple packages: $> conda create -n py34x python=3.4 scipy=0.15.0 astroid babel
+alias conda-c-h="conda create --help"
+
+alias conda-c-env-nd="conda create --no-default-packages -n $@ anaconda"
+alias conda-c-env="conda create -n $@ anaconda"
+
+
+# Determine your current python environment 
+# By default on Terminal: (myenv) $> 
+alias conda-info="conda info --envs"
+
+# Finding conda packages 
+# See list of all packages in Anaconda: https://docs.anaconda.com/anaconda/packages/pkg-docs
+alias conda-search="conda search $@" 
+
+
+# Install a package included in Anaconda 
+alias conda-install="conda install $@"
+alias conda-install-help="conda install --help"
+
+# List all packages and versions installed in active environment
+alias conda-list="conda list"
+
+# List the history of each change to the current environment
+alias conda-list-rev="conda list --revision"
+
+# Save environment to text file
+alias conda-list-sav="conda list --explicit > $1"
+
+
+alias whichubuntu="lsb_release -a"
+alias show_ram="sudo lshw -c memory"
+alias ram_size="free -h"
+
+alias dropbox="~/scripts/dropbox.py"
+alias jupyter-html="jupyter nbconvert --to html $1"
+alias untar="tar -xvzf $1"
+
+alias lynda-dl="python ~/lynda-dl/lynda-dl.py $@"
+alias lynda-c="-u PACREG863636 -p 8377 -o piercecountylibrary.org"
+alias markdown-pl="~/bin/Markdown-1.0.1/markdown.pl"
+
+alias get_desktop_back="sudo rm /etc/X11/xorg.conf.failsafe && service lightdm restart"
+alias ssh-mac="ssh alvin@alvin-macbookpro.local"
+
+
